@@ -78,34 +78,34 @@ public class BowtieSjf4jValidator {
     output.println(DIALECTS.contains(req.dialect()) ? dialectOkJson : dialectNoJson);
   }
 
-  private void runCase(JsonObject runJo) {
+  private void runCase(JsonObject jo) {
     ensureStarted();
+    RunRequest req = Sjf4j.fromNode(jo, RunRequest.class);
 
     try {
-      JsonObject tcJo = runJo.getJsonObject("case");
-
-      Map<String, Object> registry = tcJo.getMap("registry");
+      TestCase tc = req.testCase();
       SchemaStore store = new SchemaStore();
+
+      JsonObject registry = tc.registry();
       if (registry != null) {
         for (Map.Entry<String, Object> e : registry.entrySet()) {
           store.register(URI.create(e.getKey()), JsonSchema.fromNode(e.getValue()));
         }
       }
 
-      JsonSchema schema = JsonSchema.fromNode(tcJo.getNode("schema"));
+      JsonSchema schema = JsonSchema.fromNode(tc.schema());
       schema.compile(store);
 
-      List<Object> tests = tcJo.getList("tests");
+      List<Test> tests = tc.tests();
       List<TestResult> results = new ArrayList<>(tests.size());
-      for (Object t : tests) {
-        Map<?, ?> tmap = (Map<?, ?>) t;
-        results.add(new TestResult(schema.isValid(tmap.getNode("instance"))));
+      for (Test t : tests) {
+        results.add(new TestResult(schema.isValid(t.instance())));
       }
 
-      output.println(Sjf4j.toJsonString(new RunResponse(runJo.getNode("seq"), results)));
+      output.println(Sjf4j.toJsonString(new RunResponse(req.seq(), results)));
     } catch (Exception e) {
       output.println(Sjf4j.toJsonString(
-              new RunErroredResponse(runJo.getNode("seq"), true,
+              new RunErroredResponse(req.seq(), true,
                       new ErrorContext(e.getMessage(), stackTraceToString(e)))));
     }
   }
