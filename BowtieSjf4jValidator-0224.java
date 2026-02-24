@@ -123,7 +123,8 @@ public class BowtieSjf4jValidator {
   }
 
   private String buildStartResponseJson() {
-    try (InputStream is = getClass().getResourceAsStream("/META-INF/MANIFEST.MF")) {
+    try (InputStream is =
+             getClass().getResourceAsStream("/META-INF/MANIFEST.MF")) {
       if (is == null) {
         throw new IllegalStateException("Missing MANIFEST.MF");
       }
