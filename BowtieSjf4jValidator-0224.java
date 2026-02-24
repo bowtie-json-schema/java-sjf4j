@@ -7,9 +7,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.util.Map;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.Manifest;
 import org.sjf4j.JsonObject;
@@ -18,21 +18,23 @@ import org.sjf4j.annotation.node.NodeProperty;
 import org.sjf4j.schema.JsonSchema;
 import org.sjf4j.schema.SchemaStore;
 
-
 public class BowtieSjf4jValidator {
 
   public static void main(String[] args) {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    BufferedReader reader =
+        new BufferedReader(new InputStreamReader(System.in));
     new BowtieSjf4jValidator(System.out).run(reader);
   }
 
   private static final Set<String> DIALECTS =
-          Set.of("https://json-schema.org/draft/2020-12/schema");
+      Set.of("https://json-schema.org/draft/2020-12/schema");
 
   private final PrintStream output;
   private final String startResponseJson;
-  private final String dialectOkJson = Sjf4j.toJsonString(new DialectResponse(true));
-  private final String dialectNoJson = Sjf4j.toJsonString(new DialectResponse(false));
+  private final String dialectOkJson =
+      Sjf4j.toJsonString(new DialectResponse(true));
+  private final String dialectNoJson =
+      Sjf4j.toJsonString(new DialectResponse(false));
   private boolean started;
 
   public BowtieSjf4jValidator(PrintStream output) {
@@ -55,11 +57,12 @@ public class BowtieSjf4jValidator {
     JsonObject jo = JsonObject.fromJson(data);
     String cmd = jo.getString("cmd");
     switch (cmd) {
-      case "start" -> start(jo);
-      case "dialect" -> dialect(jo);
-      case "run" -> runCase(jo);
-      case "stop" -> System.exit(0);
-      default -> throw new IllegalArgumentException("Unknown cmd [%s]".formatted(cmd));
+    case "start" -> start(jo);
+    case "dialect" -> dialect(jo);
+    case "run" -> runCase(jo);
+    case "stop" -> System.exit(0);
+    default ->
+      throw new IllegalArgumentException("Unknown cmd [%s]".formatted(cmd));
     }
   }
 
@@ -67,7 +70,8 @@ public class BowtieSjf4jValidator {
     started = true;
     StartRequest req = jo.toNode(StartRequest.class);
     if (req.version() != 1) {
-      throw new IllegalArgumentException("Unsupported IHOP version [%d]".formatted(req.version()));
+      throw new IllegalArgumentException(
+          "Unsupported IHOP version [%d]".formatted(req.version()));
     }
     output.println(startResponseJson);
   }
@@ -75,7 +79,8 @@ public class BowtieSjf4jValidator {
   private void dialect(JsonObject jo) {
     ensureStarted();
     DialectRequest req = Sjf4j.fromNode(jo, DialectRequest.class);
-    output.println(DIALECTS.contains(req.dialect()) ? dialectOkJson : dialectNoJson);
+    output.println(DIALECTS.contains(req.dialect()) ? dialectOkJson
+                                                    : dialectNoJson);
   }
 
   private void runCase(JsonObject jo) {
@@ -89,7 +94,8 @@ public class BowtieSjf4jValidator {
       JsonObject registry = tc.registry();
       if (registry != null) {
         for (Map.Entry<String, Object> e : registry.entrySet()) {
-          store.register(URI.create(e.getKey()), JsonSchema.fromNode(e.getValue()));
+          store.register(URI.create(e.getKey()),
+                         JsonSchema.fromNode(e.getValue()));
         }
       }
 
@@ -104,9 +110,9 @@ public class BowtieSjf4jValidator {
 
       output.println(Sjf4j.toJsonString(new RunResponse(req.seq(), results)));
     } catch (Exception e) {
-      output.println(Sjf4j.toJsonString(
-              new RunErroredResponse(req.seq(), true,
-                      new ErrorContext(e.getMessage(), stackTraceToString(e)))));
+      output.println(Sjf4j.toJsonString(new RunErroredResponse(
+          req.seq(), true,
+          new ErrorContext(e.getMessage(), stackTraceToString(e)))));
     }
   }
 
@@ -123,22 +129,20 @@ public class BowtieSjf4jValidator {
       }
       var attributes = new Manifest(is).getMainAttributes();
 
-      String fullName = "%s-%s".formatted(
-              attributes.getValue("Implementation-Group"),
-              attributes.getValue("Implementation-Name"));
+      String fullName =
+          "%s-%s".formatted(attributes.getValue("Implementation-Group"),
+                              attributes.getValue("Implementation-Name"));
 
       StartResponse startResponse = new StartResponse(
-              1, new Implementation(
+          1,
+          new Implementation(
               "java", fullName, attributes.getValue("Implementation-Version"),
-              new ArrayList<>(DIALECTS),
-              "https://sjf4j.org",
+              new ArrayList<>(DIALECTS), "https://sjf4j.org",
               "https://github.com/sjf4j-projects/sjf4j",
               "https://github.com/sjf4j-projects/sjf4j/issues",
               "https://github.com/sjf4j-projects/sjf4j",
-              System.getProperty("os.name"),
-              System.getProperty("os.version"),
-              Runtime.version().toString(),
-              List.of()));
+              System.getProperty("os.name"), System.getProperty("os.version"),
+              Runtime.version().toString(), List.of()));
       return Sjf4j.toJsonString(startResponse);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
@@ -151,7 +155,6 @@ public class BowtieSjf4jValidator {
     return sw.toString();
   }
 }
-
 
 record StartRequest(int version) {}
 
@@ -172,18 +175,18 @@ record RunErroredResponse(Object seq, boolean errored, ErrorContext context) {}
 
 record ErrorContext(String message, String traceback) {}
 
-record Implementation(String language, String name, String version,
-                      List<String> dialects, String homepage, String documentation,
-                      String issues, String source, String os, String os_version,
-                      String language_version, List<Link> links) {}
+record
+    Implementation(String language, String name, String version,
+                   List<String> dialects, String homepage, String documentation,
+                   String issues, String source, String os, String os_version,
+                   String language_version, List<Link> links) {}
 
 record Link(String url, String description) {}
 
 record TestCase(String description, String comment, Object schema,
                 JsonObject registry, List<Test> tests) {}
 
-record Test(String description, String comment, Object instance, boolean valid) {}
+record
+    Test(String description, String comment, Object instance, boolean valid) {}
 
 record TestResult(boolean valid) {}
-
-
