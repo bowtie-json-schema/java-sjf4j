@@ -111,12 +111,16 @@ public class BowtieSjf4jValidator {
   }
 
   private void ensureStarted() {
-    if (!started) throw new IllegalArgumentException("Not started!");
+    if (!started) {
+      throw new IllegalArgumentException("Not started!");
+    }
   }
 
   private String buildStartResponseJson() {
     try (InputStream is = getClass().getResourceAsStream("/META-INF/MANIFEST.MF")) {
-      if (is == null) throw new IllegalStateException("Missing MANIFEST.MF");
+      if (is == null) {
+        throw new IllegalStateException("Missing MANIFEST.MF");
+      }
       var attributes = new Manifest(is).getMainAttributes();
 
       String fullName = "%s-%s".formatted(
