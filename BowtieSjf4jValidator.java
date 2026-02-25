@@ -84,11 +84,11 @@ public class BowtieSjf4jValidator {
                                                     : dialectNoJson);
   }
 
-  private void runCase(JsonObject runJo) {
+  private void runCase(JsonObject jo) {
     ensureStarted();
 
     try {
-      JsonObject tcJo = runJo.getJsonObject("case");
+      JsonObject tcJo = jo.getJsonObject("case");
 
       Map<String, Object> registry = tcJo.getMap("registry");
       SchemaStore store = new SchemaStore();
@@ -110,10 +110,10 @@ public class BowtieSjf4jValidator {
       }
 
       output.println(
-          Sjf4j.toJsonString(new RunResponse(runJo.getNode("seq"), results)));
+          Sjf4j.toJsonString(new RunResponse(jo.getNode("seq"), results)));
     } catch (Exception e) {
       output.println(Sjf4j.toJsonString(new RunErroredResponse(
-          runJo.getNode("seq"), true,
+          jo.getNode("seq"), true,
           new ErrorContext(e.getMessage(), stackTraceToString(e)))));
     }
   }
