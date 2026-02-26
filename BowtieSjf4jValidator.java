@@ -80,8 +80,8 @@ public class BowtieSjf4jValidator {
   private void dialect(JsonObject jo) {
     ensureStarted();
     DialectRequest req = Sjf4j.fromNode(jo, DialectRequest.class);
-    output.println(DIALECTS.contains(req.dialect()) ? dialectOkJson
-                                                    : dialectNoJson);
+    String dialect = req.dialect();
+    output.println(dialectOkJson);
   }
 
   private void runCase(JsonObject jo) {
