@@ -32,11 +32,10 @@ public class BowtieSjf4jValidator {
 
   private final PrintStream output;
   private final String startResponseJson;
-  private final String dialectOkJson =
-      Sjf4j.toJsonString(new DialectResponse(true));
-  private final String dialectNoJson =
-      Sjf4j.toJsonString(new DialectResponse(false));
   private boolean started;
+  private String curDialect;
+  private final String dialectOkJson =
+          Sjf4j.toJsonString(new DialectResponse(true));
 
   public BowtieSjf4jValidator(PrintStream output) {
     this.output = output;
@@ -80,7 +79,7 @@ public class BowtieSjf4jValidator {
   private void dialect(JsonObject jo) {
     ensureStarted();
     DialectRequest req = Sjf4j.fromNode(jo, DialectRequest.class);
-    String dialect = req.dialect();
+    curDialect = req.dialect();
     output.println(dialectOkJson);
   }
 
