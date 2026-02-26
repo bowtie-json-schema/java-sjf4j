@@ -35,7 +35,7 @@ public class BowtieSjf4jValidator {
   private boolean started;
   private String curDialect;
   private final String dialectOkJson =
-          Sjf4j.toJsonString(new DialectResponse(true));
+      Sjf4j.toJsonString(new DialectResponse(true));
 
   public BowtieSjf4jValidator(PrintStream output) {
     this.output = output;
