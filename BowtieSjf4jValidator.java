@@ -11,7 +11,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.jar.Manifest;
 import org.sjf4j.JsonObject;
 import org.sjf4j.Sjf4j;
@@ -57,7 +56,7 @@ public class BowtieSjf4jValidator {
     String cmd = jo.getString("cmd");
     switch (cmd) {
     case "start" -> start(jo);
-    case "dialect" -> dialect(jo);
+    case "dialect" -> dialect();
     case "run" -> runCase(jo);
     case "stop" -> System.exit(0);
     default ->
@@ -75,7 +74,7 @@ public class BowtieSjf4jValidator {
     output.println(startResponseJson);
   }
 
-  private void dialect(JsonObject jo) {
+  private void dialect() {
     ensureStarted();
     output.println(dialectOkJson);
   }
