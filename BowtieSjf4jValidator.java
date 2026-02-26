@@ -27,13 +27,12 @@ public class BowtieSjf4jValidator {
     new BowtieSjf4jValidator(System.out).run(reader);
   }
 
-  private static final Set<String> DIALECTS =
-      Set.of("https://json-schema.org/draft/2020-12/schema");
+  private static final List<String> DIALECTS =
+      List.of("https://json-schema.org/draft/2020-12/schema");
 
   private final PrintStream output;
   private final String startResponseJson;
   private boolean started;
-  private String curDialect;
   private final String dialectOkJson =
           Sjf4j.toJsonString(new DialectResponse(true));
 
@@ -78,8 +77,6 @@ public class BowtieSjf4jValidator {
 
   private void dialect(JsonObject jo) {
     ensureStarted();
-    DialectRequest req = Sjf4j.fromNode(jo, DialectRequest.class);
-    curDialect = req.dialect();
     output.println(dialectOkJson);
   }
 
@@ -139,7 +136,7 @@ public class BowtieSjf4jValidator {
           1,
           new Implementation(
               "java", fullName, attributes.getValue("Implementation-Version"),
-              new ArrayList<>(DIALECTS), "https://sjf4j.org",
+              DIALECTS, "https://sjf4j.org",
               "https://github.com/sjf4j-projects/sjf4j",
               "https://github.com/sjf4j-projects/sjf4j/issues",
               "https://github.com/sjf4j-projects/sjf4j",
