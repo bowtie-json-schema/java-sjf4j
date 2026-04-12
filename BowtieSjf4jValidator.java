@@ -34,7 +34,8 @@ public class BowtieSjf4jValidator {
   private final PrintStream output;
   private final String startResponseJson;
   private boolean started;
-  private final String dialectOkJson = sjf4j.toJsonString(new DialectResponse(true));
+  private final String dialectOkJson =
+      sjf4j.toJsonString(new DialectResponse(true));
 
   public BowtieSjf4jValidator(PrintStream output) {
     this.output = output;
@@ -105,7 +106,8 @@ public class BowtieSjf4jValidator {
         results.add(new TestResult(schema.isValid(tmap.get("instance"))));
       }
 
-      output.println(sjf4j.toJsonString(new RunResponse(jo.getNode("seq"), results)));
+      output.println(
+          sjf4j.toJsonString(new RunResponse(jo.getNode("seq"), results)));
     } catch (Exception e) {
       output.println(sjf4j.toJsonString(new RunErroredResponse(
           jo.getNode("seq"), true,
