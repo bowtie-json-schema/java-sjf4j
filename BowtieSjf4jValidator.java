@@ -41,7 +41,7 @@ public class BowtieSjf4jValidator {
   private boolean started;
   private final String dialectOkJson =
       JSONS.toJsonString(new DialectResponse(true));
-  private SchemaRegistry registry;
+  private SchemaDialect dialect;
 
   public BowtieSjf4jValidator(PrintStream output) {
     this.output = output;
@@ -85,32 +85,36 @@ public class BowtieSjf4jValidator {
   private void dialect(JsonObject jo) {
     ensureStarted();
 
-    String dialect = jo.getString("dialect");
-    switch (dialect) {
+    String uri = jo.getString("dialect");
+    switch (uri) {
     case "https://json-schema.org/draft/2020-12/schema":
-      registry = new SchemaRegistry(SchemaDialect.DRAFT_2020_12);
+      dialect = SchemaDialect.DRAFT_2020_12;
       break;
     case "https://json-schema.org/draft/2019-09/schema":
-      registry = new SchemaRegistry(SchemaDialect.DRAFT_2019_09);
+      dialect = SchemaDialect.DRAFT_2019_09;
       break;
     case "https://json-schema.org/draft-07/schema":
     case "http://json-schema.org/draft-07/schema#":
-      registry = new SchemaRegistry(SchemaDialect.DRAFT_07);
+      dialect = SchemaDialect.DRAFT_07;
       break;
     default:
-      throw new IllegalArgumentException("Unsupported dialect " + dialect);
+      throw new IllegalArgumentException("Unsupported dialect " + uri);
     }
     output.println(dialectOkJson);
   }
 
   private void runCase(JsonObject jo) {
     ensureStarted();
-    if (registry == null) {
+    if (dialect == null) {
       throw new IllegalArgumentException("No dialect configured!");
     }
 
     try {
       JsonObject tcJo = jo.getJsonObject("case");
+
+      // External schemas belong to a single case, and different cases may
+      // give the same URI different contents, so each case gets its own.
+      SchemaRegistry registry = new SchemaRegistry(dialect);
 
       Map<String, Object> registryMap = tcJo.getMap("registry");
       if (registryMap != null) {
