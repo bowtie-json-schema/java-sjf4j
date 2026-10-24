@@ -112,6 +112,19 @@ public class BowtieSjf4jValidator {
     try {
       JsonObject tcJo = jo.getJsonObject("case");
 
+      String outputFormat = jo.getString("output");
+      if (outputFormat != null && !outputFormat.equals("flag")) {
+        List<Object> tests = tcJo.getList("tests");
+        List<TestSkipped> results = new ArrayList<>(tests.size());
+        for (int i = 0; i < tests.size(); i++) {
+          results.add(new TestSkipped(
+              true, "unsupported output format " + outputFormat));
+        }
+        output.println(
+            JSONS.toJsonString(new RunResponse(jo.getNode("seq"), results)));
+        return;
+      }
+
       // External schemas belong to a single case, and different cases may
       // give the same URI different contents, so each case gets its own.
       SchemaRegistry registry = new SchemaRegistry(dialect);
@@ -192,9 +205,10 @@ record DialectRequest(String dialect) {}
 
 record DialectResponse(boolean ok) {}
 
-record RunRequest(Object seq, @NodeProperty("case") TestCase testCase) {}
+record RunRequest(Object seq, @NodeProperty("case") TestCase testCase,
+                  String output) {}
 
-record RunResponse(Object seq, List<TestResult> results) {}
+record RunResponse(Object seq, List<?> results) {}
 
 record RunSkippedResponse(Object seq, boolean skipped, String message,
                           String issue_url) {}
@@ -218,3 +232,4 @@ record
     Test(String description, String comment, Object instance, boolean valid) {}
 
 record TestResult(boolean valid) {}
+record TestSkipped(boolean skipped, String message) {}
