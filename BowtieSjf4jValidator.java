@@ -50,6 +50,8 @@ public class BowtieSjf4jValidator {
   private final String dialectOkJson =
       JSONS.toJsonString(new DialectResponse(true));
   private SchemaDialect dialect;
+  private ValidationOptions annotatedOptions =
+      ValidationOptions.builder().failFast(true).collectAnnotations(true).build();;
 
   public BowtieSjf4jValidator(PrintStream output) {
     this.output = output;
@@ -80,7 +82,7 @@ public class BowtieSjf4jValidator {
     started = true;
     if (req.version() != 1) {
       throw new IllegalArgumentException(
-              "Unsupported IHOP version [%d]".formatted(req.version()));
+          "Unsupported IHOP version [%d]".formatted(req.version()));
     }
     output.println(startResponseJson);
   }
@@ -172,10 +174,8 @@ public class BowtieSjf4jValidator {
         }
         break;
       case "annotations":
-        ValidationOptions options =
-            ValidationOptions.builder().failFast(true).collectAnnotations(true).build();
         for (Test t : tests) {
-          ValidationResult result = plan.validate(t.instance(), options);
+          ValidationResult result = plan.validate(t.instance(), annotatedOptions);
           results.add(new TestResult(result.isValid(), buildAnnotations(result)));
         }
         break;
